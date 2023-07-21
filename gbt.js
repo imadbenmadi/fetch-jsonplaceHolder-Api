@@ -22,16 +22,15 @@ function setActiveStyle(childNumber) {
   });
 }
 
-
-
 function user_requist_connection() {
   return fetch("https://jsonplaceholder.typicode.com/users")
     .then((response) => {
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           "Failed to get data from the API 'Api not Exist'. Status: " +
             response.status
         );
+      }
       return response.json();
     })
     .catch((error) => {
@@ -44,19 +43,26 @@ function user_requist_connection() {
 }
 
 function Posts_requist_connection(current_userId) {
-  return fetch(`https://jsonplaceholder.typicode.com/posts?userId=${current_userId}`)
+  return fetch(
+    `https://jsonplaceholder.typicode.com/posts?userId=${current_userId}`
+  )
     .then((response) => {
-      if (!response.ok) throw new Error("Failed to get data from the API 'Api not Exist'. Status: " + response.status);
+      if (!response.ok) {
+        throw new Error(
+          "Failed to get data from the API 'Api not Exist'. Status: " +
+            response.status
+        );
+      }
       return response.json();
     })
     .catch((error) => {
-      let err = "Error: There was a network error while making the API request.\n" + error;
+      let err =
+        "Error: There was a network error while making the API request.\n" +
+        error;
       error_bg(err);
       throw error;
     });
 }
-
-
 
 function initilise_childs_users() {
   return user_requist_connection().then((users) => {
@@ -81,7 +87,7 @@ function initilise_childs_users() {
     Menu.forEach((item, index) => {
       item.addEventListener("click", function () {
         if (item.getAttribute("data-id") == current_userId) {
-          //   pass;
+        //   pass;
         }
         let userId = item.getAttribute("data-id");
         setActiveStyle(index);
@@ -94,25 +100,16 @@ function initilise_childs_users() {
 }
 
 function initilise_childs_messages() {
-   messagesContainer.innerHTML = `
-    <div class="messages_loading">
-        <div class="lds-ring lds-ring-black">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-      </div>
-    `;
   initilise_childs_users().then((current_userId) => {
     document.querySelector(".loading").style.display = "none";
     document.querySelector(".project_container").style.display = "flex";
     document.querySelector("body").style.backgroundColor = "white";
+
     Posts_requist_connection(current_userId).then((res) => {
-     messagesContainer.innerHTML = ``;
       for (r of res) {
         Posts_table.push(r);
       }
+
       for (const post of Posts_table) {
         const node = document.createElement("div");
         const hr = document.createElement("hr");
@@ -130,21 +127,10 @@ function initilise_childs_messages() {
 
 function update_content(current_userId) {
   // Clear the existing messages content
-  messagesContainer.innerHTML = `
-  <div class="messages_loading">
-      <div class="lds-ring lds-ring-black">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </div>
-  `;
+  messagesContainer.innerHTML = "";
 
   // Get the posts for the selected user
   Posts_requist_connection(current_userId).then((res) => {
-    messagesContainer.innerHTML = "";
-
     for (const post of res) {
       const node = document.createElement("div");
       const hr = document.createElement("hr");
@@ -158,8 +144,6 @@ function update_content(current_userId) {
     }
   });
 }
-
-
 
 if (!navigator.onLine) {
   let err = "Check Your Network Connection !";
